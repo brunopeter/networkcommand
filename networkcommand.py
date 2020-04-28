@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # Author:    Peter Bruno
 # Purpose:   Script commands to group of Cisco devices with success/failure feedback.
-import sys
+#import sys
 from netmiko import ConnectHandler
 from getpass import getpass
 
 # Commands to issue on each switch
-config_commands = [
-    'no snmp-server community private',
-    'no snmp-server community public'
-    ]
+config_commands = tuple(filter(lambda x: x.strip() != '', '''
+no snmp-server community private
+no snmp-server community public
+'''.splitlines()))
 
 # List of switches to update.  Parse into a list and remove any blanks.
 switch_list = tuple(filter(lambda x: x.strip() != '', '''
