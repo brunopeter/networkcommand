@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Author:    Peter Bruno
 # Purpose:   Script commands to group of Cisco devices with success/failure feedback.
-#import sys
 from netmiko import ConnectHandler
 from getpass import getpass
 
