@@ -4,17 +4,22 @@
 from netmiko import ConnectHandler
 from getpass import getpass
 
+def maketuple(str):
+    #Parse a multi-line string into a tuple and remove any blanks.
+    return tuple(filter(lambda x: x.strip() != '', str.splitlines()))
+
+
 # Commands to issue on each switch
-config_commands = tuple(filter(lambda x: x.strip() != '', '''
+config_commands = maketuple('''
 no snmp-server community private
 no snmp-server community public
-'''.splitlines()))
+''')
 
-# List of switches to update.  Parse into a list and remove any blanks.
-switch_list = tuple(filter(lambda x: x.strip() != '', '''
+# List of switches to update.
+switch_list = maketuple('''
 192.168.1.11
 192.168.1.12
-'''.splitlines()))
+''')
 
 # Save configuration when done.
 WRITE_MEMORY = True
