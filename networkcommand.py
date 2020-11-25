@@ -4,15 +4,15 @@
 from netmiko import ConnectHandler
 from getpass import getpass
 
-def maketuple(str):
+def maketuple(str) -> tuple:
     #Parse a multi-line string into a tuple and remove any blanks.
     return tuple(filter(lambda x: x.strip() != '', str.splitlines()))
 
 
 # Commands to issue on each switch
 config_commands = maketuple('''
-no snmp-server community private
 no snmp-server community public
+no snmp-server community private
 ''')
 
 # List of switches to update.
