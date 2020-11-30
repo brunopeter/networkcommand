@@ -5,7 +5,8 @@ from netmiko import ConnectHandler
 from getpass import getpass
 
 def maketuple(str) -> tuple:
-    #Parse a multi-line string into a tuple and remove any blanks.
+    # Parse a multi-line string into a tuple and remove any blanks.
+    # Tuples used instead of list for efficiency.
     return tuple(filter(lambda x: x.strip() != '', str.splitlines()))
 
 

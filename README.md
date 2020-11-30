@@ -8,6 +8,7 @@ To use this script:
 * modify the 'switch_list' tuple to contain the ip address of the devices
 
 Examples:
+
 ![example image](./example-netcommand.png)
 
 User will be prompted for a login name, password and an enable password (optional).  It is assummed that the same credentials are valid for all of the devices.
