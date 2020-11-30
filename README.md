@@ -8,19 +8,7 @@ To use this script:
 * modify the 'switch_list' tuple to contain the ip address of the devices
 
 Examples:
-'''
-# Commands to issue on each switch -- examples below, modify to suit your needs
-config_commands = maketuple('''
-no snmp-server community public
-no snmp-server community private
-''')
-
-# List of switches to update -- examples below, modify to suit your needs
-switch_list = maketuple('''
-192.168.1.11
-192.168.1.12
-''')
-'''
+![example image](./example-netcommand.png)
 
 User will be prompted for a login name, password and an enable password (optional).  It is assummed that the same credentials are valid for all of the devices.
 
