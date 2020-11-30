@@ -1,17 +1,42 @@
 [![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/brunopeter/networkcommand)
 
 # Simple Network Command
-A short script to automate changes to multiple devices.  Useful for quick changes to multiple devices.
+A short script to automate changes to multiple devices.  Useful for quick changes.
 
 ## networkcommand
 
 To use this script:
-* modify the 'config_commands' tuple to contain all of the command(s) you want applied to the devices.
-* modify the 'switch_list' tuple to contain the ip address of the devices
+* 'cmdlist' containing list of command(s)
+* 'devicelist' containing list of device(s) 
 
-Examples:
+### Examples:
 
-![example image](./example-netcommand.png)
+file:  cmdlist
+'''
+no snmp-server community public
+no snmp-server community private
+'''
+
+file:  devicelist
+'''
+192.168.1.11
+192.168.1.12
+'''
+
+### Example execution:
+'''
+python networkcommand.py
+
+Switch configuration updater. Please provide login information.
+
+Username: cisco
+Password:
+Enable Secret:
+
+IP Address          Switch Hostname                         Results
+192.168.1.11        switch>                                 #**w
+192.168.1.12        switch>                                 #**w
+'''
 
 User will be prompted for a login name, password and an enable password (optional).  It is assummed that the same credentials are valid for all of the devices.
 
