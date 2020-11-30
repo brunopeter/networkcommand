@@ -9,13 +9,13 @@ def maketuple(str) -> tuple:
     return tuple(filter(lambda x: x.strip() != '', str.splitlines()))
 
 
-# Commands to issue on each switch
+# Commands to issue on each switch -- examples below, modify to suit your needs
 config_commands = maketuple('''
 no snmp-server community public
 no snmp-server community private
 ''')
 
-# List of switches to update.
+# List of switches to update -- examples below, modify to suit your needs
 switch_list = maketuple('''
 192.168.1.11
 192.168.1.12
@@ -85,10 +85,6 @@ def DeviceUpdate():
         net_connect.disconnect()
 
 
-def main():
+if __name__ == "__main__":
     DeviceUpdate()
     print(f"\n All Done!")
-
-
-if __name__ == "__main__":
-    main()
