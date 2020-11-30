@@ -17,5 +17,16 @@ User will be prompted for a login name, password and an enable password (optiona
 
 Devices will be connected to one at at time, the commands issued and feedback provided to the screen on progress, success and failure.  There is no automatic rollback for failed / partial changes.
 
+# Installation
+This has been tested using on python 3.8.6 & 3.9 on Windows X, but should work .
+'''
+git clone https://github.com/brunopeter/networkcommand.git
+'''
+
+Then cd networkcommand
+'''
+pip install -r requirements.txt
+'''
+
 ## Requirements
 * netmiko >= 2.7.1

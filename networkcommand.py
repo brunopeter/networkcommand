@@ -1,26 +1,29 @@
 #!/usr/bin/env python
 # Author:    Peter Bruno
 # Purpose:   Script commands to group of Cisco devices with success/failure feedback.
+import sys
+from os import linesep
 from netmiko import ConnectHandler
 from getpass import getpass
 
-def maketuple(str) -> tuple:
-    # Parse a multi-line string into a tuple and remove any blanks.
-    # Tuples used instead of list for efficiency.
-    return tuple(filter(lambda x: x.strip() != '', str.splitlines()))
+def usage():
+    print("Usage: python ", sys.argv[0])
+    print("networkcommand -- send command(s) to device(s) with visual feedback of progress.")
+    print("Requires:")
+    print("   file 'cmdlist' containing commands to pass to devices.")
+    print("   file 'devicelist' containing the ip addresses of devices to interact with.")
+    print("")
 
+def getfiledata(filename) -> tuple:
+    # open file for list of IP addresses
+    try:
+        with open(filename, "r") as f:
+            inputlines = f.read().splitlines()
+    except Exception as e:
+        usage()
+        print(e)
 
-# Commands to issue on each switch -- examples below, modify to suit your needs
-config_commands = maketuple('''
-no snmp-server community public
-no snmp-server community private
-''')
-
-# List of switches to update -- examples below, modify to suit your needs
-switch_list = maketuple('''
-192.168.1.11
-192.168.1.12
-''')
+    return inputlines
 
 # Save configuration when done.
 WRITE_MEMORY = True
@@ -87,5 +90,8 @@ def DeviceUpdate():
 
 
 if __name__ == "__main__":
+    config_commands = getfiledata("cmdlist")
+    switch_list = getfiledata("devicelist")
+
     DeviceUpdate()
     print(f"\n All Done!")
