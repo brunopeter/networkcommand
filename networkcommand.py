@@ -16,6 +16,8 @@ def usage():
 
 def getfiledata(filename) -> tuple:
     # open file for list of IP addresses
+    inputlines = []
+
     try:
         with open(filename, "r") as f:
             inputlines = f.read().splitlines()

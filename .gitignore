@@ -1,3 +1,7 @@
+#default / example files used in execution
+cmdlist
+devicelist
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
