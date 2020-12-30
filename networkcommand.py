@@ -1,47 +1,52 @@
 #!/usr/bin/env python
 # Author:    Peter Bruno
 # Purpose:   Script commands to group of Cisco devices with success/failure feedback.
-import sys
-from os import linesep
 from netmiko import ConnectHandler
 from getpass import getpass
 
-def usage():
-    print("Usage: python ", sys.argv[0])
-    print("networkcommand -- send command(s) to device(s) with visual feedback of progress.")
-    print("Requires:")
-    print("   file 'cmdlist' containing commands to pass to devices.")
-    print("   file 'devicelist' containing the ip addresses of devices to interact with.")
-    print("")
+# Save configuration when done.
+WRITE_MEMORY = True
 
-def getfiledata(filename) -> tuple:
-    # open file for list of IP addresses
+def usage() -> None:
+    print("""
+    ============================================================================================
+    Purpose:
+       networkcommand.py -- send command(s) to device(s) with visual feedback of progress.
+    Requires:
+       file 'cmdlist' containing commands to pass to devices.
+       file 'devicelist' containing the ip addresses of devices to interact with.
+    ============================================================================================
+    """)
+    exit()
+
+def getfiledata(filename: str) -> tuple:
+    """ 
+        Generic function to open file and parse into lines
+        returns tuple for memory conservation
+    """
     inputlines = []
 
     try:
         with open(filename, "r") as f:
             inputlines = f.read().splitlines()
-    except Exception as e:
+    except Exception as err:
+        print(err)
         usage()
-        print(e)
 
     return inputlines
 
-# Save configuration when done.
-WRITE_MEMORY = True
 
-
-def GetCredentials():
+def GetCredentials() -> str:
     """ Get username and password information. """
     print("Switch configuration updater. Please provide login information.\n")
-    usr = input("Username: ")
-    pwd = getpass("Password: ")
-    ena = getpass("Enable Secret: ")
+    user = input("Username: ").strip()
+    password = getpass("Password: ").strip()
+    enable = getpass("Enable Secret: ").strip()
 
-    return usr.strip(), pwd.strip(), ena.strip()
+    return user, password, enable
 
 
-def SwitchChanges(switch):
+def SwitchChanges(switch: dict) -> None:
     """ Connect to each switch and make configuration change(s). """
     # Print out the prompt/hostname of the device
     prompt = switch.find_prompt()
@@ -64,8 +69,8 @@ def SwitchChanges(switch):
             print("FAILED!")
 
 
-def DeviceUpdate():
-    """ Parse list of switches """
+def DeviceUpdate() -> None:
+    """ Process devices and apply configuration changes. """
     username, password, enasecret = GetCredentials()
     ciscosw = {
         "device_type"   : "cisco_ios",
@@ -74,7 +79,7 @@ def DeviceUpdate():
         "secret"        : enasecret,
     }
 
-    # print headers
+    # print headers for results output
     print(f"\n{'IP Address':<20}{'Switch Hostname':<40}{'Results':<20}", end="")
 
     # parse list of switches and apply commands to them
