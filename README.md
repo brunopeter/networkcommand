@@ -57,3 +57,4 @@ pip install -r requirements.txt
 
 ## Requirements
 * netmiko >= 2.7.1
+* tqdm >= 4.56.0

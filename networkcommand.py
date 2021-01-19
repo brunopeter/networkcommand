@@ -3,6 +3,7 @@
 # Purpose:   Script commands to group of Cisco devices with success/failure feedback.
 from netmiko import ConnectHandler
 from getpass import getpass
+from tqdm import tqdm
 
 # Save configuration when done.
 WRITE_MEMORY = True
@@ -20,19 +21,17 @@ def usage() -> None:
     exit()
 
 def getfiledata(filename: str) -> tuple:
-    """ 
+    """
         Generic function to open file and parse into lines
         returns tuple for memory conservation
     """
     inputlines = []
-
     try:
         with open(filename, "r") as f:
             inputlines = f.read().splitlines()
     except Exception as err:
         print(err)
         usage()
-
     return inputlines
 
 
@@ -46,59 +45,63 @@ def GetCredentials() -> str:
     return user, password, enable
 
 
-def SwitchChanges(switch: dict) -> None:
+def SwitchChanges(switch: dict) -> str:
     """ Connect to each switch and make configuration change(s). """
     # Print out the prompt/hostname of the device
-    prompt = switch.find_prompt()
+    prompt = f"{switch.find_prompt():<40}"
 
-    print(f"{prompt:<40}", end="", flush=True)
     try:        # Ensure we are in enable mode and can make changes.
         switch.enable() if "#" not in prompt[-1] else None
-        print("#", end="", flush=True)
     except Exception:
-        print("Unable to enter enable mode.", end="", flush=True)
+        prompt = prompt + "Unable to enter enable mode."
         exit
     else:
         try:
             output = switch.send_config_set(config_commands)
-            print(f"*", end="", flush=True)
             if WRITE_MEMORY:
                 output = switch.save_config()
-                print(f"w", end="", flush=True)
         except Exception:       # Command failed! Stop processing further commands.
-            print("FAILED!")
+            prompt = prompt + "CHANGES FAILED!"
+    return(prompt)
 
 
-def DeviceUpdate() -> None:
+def DeviceUpdate(ciscosw: dict) -> None:
     """ Process devices and apply configuration changes. """
+
+    # print headers for results output
+    print(f"\n{'IP Address':<20}{'Switch Hostname':<40}")
+
+    # parse list of switches and apply commands to them
+    switch_tqdm = tqdm(switch_list, desc = "Processing...", position = 0)
+    for switch_ip in switch_tqdm:
+        ciscosw["ip"] = switch_ip
+        try:    # Connect to switch and enter enable mode.
+            switch_tqdm.set_description(f"Processing... {switch_ip:<20}")
+            net_connect = ConnectHandler(**ciscosw)
+            msg = SwitchChanges(net_connect) #, prompt)
+            switch_tqdm.write(f"{switch_ip:<20}{msg}")
+        except Exception:
+            switch_tqdm.write(f"{switch_ip:<20}** Failed to connect.")
+            continue
+
+        net_connect.disconnect()
+        switch_tqdm.set_description()
+
+
+if __name__ == "__main__":
+    try:
+        config_commands = getfiledata("cmdlist") # Commands to issue
+        switch_list = getfiledata("devicelist") # Devices to update
+    except Exception:
+        usage() # Error getting commands or devices, print usage and exit
+
     username, password, enasecret = GetCredentials()
-    ciscosw = {
+    devicedict = {
         "device_type"   : "cisco_ios",
         "username"      : username,
         "password"      : password,
         "secret"        : enasecret,
+        "ip"            : "",
     }
 
-    # print headers for results output
-    print(f"\n{'IP Address':<20}{'Switch Hostname':<40}{'Results':<20}", end="")
-
-    # parse list of switches and apply commands to them
-    for switch_ip in switch_list:
-        ciscosw["ip"] = switch_ip
-        print(f"\n{switch_ip:<20}", end="", flush=True)
-        try:    # Connect to switch and enter enable mode.
-            net_connect = ConnectHandler(**ciscosw)
-            SwitchChanges(net_connect)
-        except Exception:
-            print(f"** Failed to connect.", end="", flush=True)
-            continue
-
-        net_connect.disconnect()
-
-
-if __name__ == "__main__":
-    config_commands = getfiledata("cmdlist")
-    switch_list = getfiledata("devicelist")
-
-    DeviceUpdate()
-    print(f"\n All Done!")
+    DeviceUpdate(devicedict)
